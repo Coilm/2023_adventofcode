@@ -2,6 +2,7 @@
 #include <fstream> 
 #include <string>
 #include <vector>
+#include <limits>
 
 using namespace std;
 
@@ -24,15 +25,11 @@ vector<string> splitString(string line, char token){
     return result;
 } 
 
+vector<int> findLowestAmountCube(string line){
 
-int findValidGameID(string line){
-    const int RED = 12;
-    const int GREEN = 13;
-    const int BLUE = 14;
-
-    string token;
     string c;
     vector<string> tmp;
+    vector<int> count = {0,0,0};
 
     tmp = splitString(line, ':');
     int gameId = stoi(splitString(tmp[0], ' ')[1]);
@@ -47,37 +44,39 @@ int findValidGameID(string line){
             int val = stoi(split[1]);
             c = split[2];
 
-            if (c.find("blue") != string::npos){
-                if (val > BLUE)
-                    return -1;
-            }
             if(c.find("red") != string::npos){
-                if (val > RED)
-                    return -1;
+                if (val > count[0]){
+                    count[0] = val;
+                }
             }
             if(c.find("green") != string::npos){
-                if (val > GREEN)
-                    return -1;
+                if (val > count[1]){
+                    count[1] = val;
+                }
+            }
+            if (c.find("blue") != string::npos){
+                if (val > count[2]){
+                    count[2] = val;
+                }
             }
         }
     }
-    return gameId;
+    return count;//count[0]*count[1]*count[2];
 }
-
 
 int main(){
 
     string line;
-    int id;
+    vector<int> vals;
+    int mul;
     int sum = 0;
     ifstream file ("advent2.txt");
 
     if (file.is_open()){
         while (getline(file, line)){
-            id = findValidGameID(line);
-            if (id != -1){
-                sum += id;
-            }
+            vals = findLowestAmountCube(line);
+            mul = vals[0]*vals[1]*vals[2];
+            sum += mul;
         }
     }
 
